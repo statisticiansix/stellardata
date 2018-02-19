@@ -1,0 +1,6 @@
+.Rproj.user
+*.RData
+
+R/encryption.R
+
+R/new.R
