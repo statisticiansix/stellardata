@@ -7,7 +7,6 @@ Maintainer: Simon Wallace <statistician.six@gmail.com>
 Description: Enables users to easily pull data from the endpoints of the Horizon API as well as the links generated from the queries.
 License: CC0
 Encoding: UTF-8
-LazyData: true
 Imports:
     jsonlite,
     tidyverse,

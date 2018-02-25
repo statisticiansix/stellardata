@@ -146,76 +146,76 @@ getLineage <- function(stellarAddress,generationsMax=10,generation=NULL,lineage=
     return(lineage)
   }
 }
+# #
+# # # # lineage=getLineage(stellarAddress)
+# a <- getStellarData('ledgers',210)
+# # # b <- getStellarData('effects',500)
+# # # c <- getStellarData('operations',500)
+# # # d <- getStellarData('payments',500)
+# # # e <- getStellarData('transactions',500)
+# # # f <- getStellarData('trades',500)
+# g <- getStellarData(link="https://horizon.stellar.org/transactions/f93dfc81770019f2e842c6a1f3ecb2746db8e2b9b5b30b316128e6504de52f06/effects")
 #
-# # # lineage=getLineage(stellarAddress)
-a <- getStellarData('ledgers',210)
-# # b <- getStellarData('effects',500)
-# # c <- getStellarData('operations',500)
-# # d <- getStellarData('payments',500)
-# # e <- getStellarData('transactions',500)
-# # f <- getStellarData('trades',500)
-g <- getStellarData(link="https://horizon.stellar.org/transactions/f93dfc81770019f2e842c6a1f3ecb2746db8e2b9b5b30b316128e6504de52f06/effects")
-
-# # ledgers, effects, operations, payments, transactions, and trades
-# #
-# # effectsTypeSummary <- b %>%
-# #   group_by(type)%>%
-# #   summarise(n=n())%>%
-# #   ungroup %>%
-# #   mutate(Percentage=n/sum(n)*100)
-# #
-# # ggplot(effectsTypeSummary)+
-# #   geom_bar(aes(x=type,y=Percentage),colour='black',stat='identity')+theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=60,hjust=1))
-# #
-# # # Account credited and debited are duplicated in some fields
-# # payments <- b %>%
-# #   filter(type=='account_debited')%>%
-# #   mutate(asset_code=ifelse(asset_type=='native','XLM',asset_code))
-# # c <- getStellarData('operations',1000)
-# # d <- getStellarData('payments',200)
-# # # e <- getStellarData('transactions',200)
-# # f <- getStellarData('trades',200)
-# #
-# # # ledgerBenchmark <- microbenchmark(times=50,
-# # #                                   getStellarData('ledgers',1600),
-# # #                                   getStellarData('ledgers',800),
-# # #                                   getStellarData('ledgers',400),
-# # #                                   getStellarData('ledgers',200),
-# # #                                   getStellarData('ledgers',100),
-# # #                                   getStellarData('ledgers',50)
-# # # )
+# # # ledgers, effects, operations, payments, transactions, and trades
 # # #
-# # # ledgerBenchmark;autoplot(ledgerBenchmark)
-# # save(ledgerBenchmark,file='BenchmarkingNew.Rdata')
-# # autoplot(ledgerBenchmark)
-# #
-# # # ggplot(a)+
-# # #   geom_bar(aes(x=as.factor(closed_time)))
+# # # effectsTypeSummary <- b %>%
+# # #   group_by(type)%>%
+# # #   summarise(n=n())%>%
+# # #   ungroup %>%
+# # #   mutate(Percentage=n/sum(n)*100)
 # # #
-# # # aSummarised <- a %>%
-# # #   mutate(non_transaction=operation_count-transaction_count)%>%
-# # #   group_by(non_transaction,transaction_count)%>%
-# # #   summarise(mean_closed_time=mean(closed_time))
+# # # ggplot(effectsTypeSummary)+
+# # #   geom_bar(aes(x=type,y=Percentage),colour='black',stat='identity')+theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=60,hjust=1))
 # # #
-# # # ggplot(aSummarised)+aes()
+# # # # Account credited and debited are duplicated in some fields
+# # # payments <- b %>%
+# # #   filter(type=='account_debited')%>%
+# # #   mutate(asset_code=ifelse(asset_type=='native','XLM',asset_code))
+# # # c <- getStellarData('operations',1000)
+# # # d <- getStellarData('payments',200)
+# # # # e <- getStellarData('transactions',200)
+# # # f <- getStellarData('trades',200)
+# # #
+# # # # ledgerBenchmark <- microbenchmark(times=50,
+# # # #                                   getStellarData('ledgers',1600),
+# # # #                                   getStellarData('ledgers',800),
+# # # #                                   getStellarData('ledgers',400),
+# # # #                                   getStellarData('ledgers',200),
+# # # #                                   getStellarData('ledgers',100),
+# # # #                                   getStellarData('ledgers',50)
+# # # # )
 # # # #
-# # # ggplot(aSummarised)+
-# # #   geom_tile(aes(x=non_transaction,y=transaction_count,fill=mean_closed_time),colour='black',size=1)+
-# # #   coord_equal()
+# # # # ledgerBenchmark;autoplot(ledgerBenchmark)
+# # # save(ledgerBenchmark,file='BenchmarkingNew.Rdata')
+# # # autoplot(ledgerBenchmark)
 # # #
-# # # ggplot(a)+
-# # #   geom_jitter(aes(x=operation_count-transaction_count,y=transaction_count,colour=closed_time),size=1)
+# # # # ggplot(a)+
+# # # #   geom_bar(aes(x=as.factor(closed_time)))
+# # # #
+# # # # aSummarised <- a %>%
+# # # #   mutate(non_transaction=operation_count-transaction_count)%>%
+# # # #   group_by(non_transaction,transaction_count)%>%
+# # # #   summarise(mean_closed_time=mean(closed_time))
+# # # #
+# # # # ggplot(aSummarised)+aes()
+# # # # #
+# # # # ggplot(aSummarised)+
+# # # #   geom_tile(aes(x=non_transaction,y=transaction_count,fill=mean_closed_time),colour='black',size=1)+
+# # # #   coord_equal()
+# # # #
+# # # # ggplot(a)+
+# # # #   geom_jitter(aes(x=operation_count-transaction_count,y=transaction_count,colour=closed_time),size=1)
+# # #
+# # # View(b)
 # #
-# # View(b)
-#
-# # ```{r}
-# # historicValues <- getCoins('stellar')
-# # birthday <- lineage%>%
-# #   separate(birth,c('date','time'),' ')%>%
-# #   mutate('date'=as.Date(date))
-# # birthInfo <- left_join(birthday,select(historicValues,'date','close'))
-# # plot <- ggplot(historicValues)+
-# #   geom_line(aes(x=date,y=close))+
-# #   geom_point(data=birthInfo,aes(x=date,y=close),size=1,colour='red')
-# # ggplotly(plot)
-# # ```
+# # # ```{r}
+# # # historicValues <- getCoins('stellar')
+# # # birthday <- lineage%>%
+# # #   separate(birth,c('date','time'),' ')%>%
+# # #   mutate('date'=as.Date(date))
+# # # birthInfo <- left_join(birthday,select(historicValues,'date','close'))
+# # # plot <- ggplot(historicValues)+
+# # #   geom_line(aes(x=date,y=close))+
+# # #   geom_point(data=birthInfo,aes(x=date,y=close),size=1,colour='red')
+# # # ggplotly(plot)
+# # # ```
