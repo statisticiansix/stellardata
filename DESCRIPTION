@@ -12,3 +12,4 @@ Imports:
     tidyverse,
     magrittr,
     packcircles
+RoxygenNote: 6.0.1
