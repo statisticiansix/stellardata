@@ -4,7 +4,7 @@ Title: Pull data from Stellar Horizon API endpoints
 Version: 0.1.0
 Author: Simon Wallace
 Maintainer: Simon Wallace <statistician.six@gmail.com>
-Description: Enables users to easily pull data from the ledgers, effects, operations, payments, transactions, and trades endpoints of the Horizon API as well as the links generated from the queries.
+Description: Enables users to easily pull data from the endpoints of the Horizon API as well as the links generated from the queries.
 License: CC0
 Encoding: UTF-8
 LazyData: true
