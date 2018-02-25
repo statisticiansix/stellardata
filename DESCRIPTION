@@ -1,11 +1,15 @@
 Package: stellardata
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Pull data from Stellar Horizon API endpoints
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Simon Wallace
+Maintainer: Simon Wallace <statistician.six@gmail.com>
+Description: Enables users to easily pull data from the ledgers, effects, operations, payments, transactions, and trades endpoints of the Horizon API as well as the links generated from the queries.
+License: CC0
 Encoding: UTF-8
 LazyData: true
+Imports:
+    jsonlite,
+    tidyverse,
+    magrittr,
+    packcircles
