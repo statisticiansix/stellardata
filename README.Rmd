@@ -93,10 +93,6 @@ As well as working for the effects, operations, payments, transactions, and trad
 
 We can get the API data for this link - `ledgerTransactionLink <- "https://horizon.stellar.org/ledgers/16526217/payments"` - using `getStellarData()` like so:
 
-```{r,echo=FALSE}
-ledgerTransactionLink <- gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])
-```
-
 ```{r}
 getStellarData(link=ledgerTransactionLink)
 ```
