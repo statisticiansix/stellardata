@@ -1,0 +1,144 @@
+
+```{r setup, echo=FALSE,warning=FALSE,message=FALSE}
+library(stellardata)
+library(jsonlite)
+library(tidyverse)
+library(magrittr)
+library(packcircles)
+library(crypto)
+library(plotly)
+```
+ 
+No. I am not talking about data that is stellar, this package makes downloading the data that is available from the [Stellar](https://www.stellar.org) network API - Horizon - easy. Although it is also a stellar data source.
+
+<!-- # What is cryptocurrency? -->
+
+<!-- Before we delve into the data, lets cover the basics of what a cryptocurrency is. Although it seems impossible to have escaped the news coverage in the last quarter of 2017, this doesn't necessarily translate to an understanding of what a cryptocurrency is. -->
+
+<!-- A cryptocurrency is a digital asset that uses cryptography to secure transactions, create new tokens, and verify transfers - hence the name crypto currency. Whilst Bitcoin is the first cryptocurrency there have been multiple coins created since referred to as alternative or alt coins. -->
+
+# Stellar
+
+The Stellar network is an open source protocol for exhanging money that is faster than previous altcoins and Bitcoin with transactions and operations being confirmed on ledgers which close approximately every 5 seconds. Lumens (XLM) are a native asset of the Stellar network and are an altcoin. 
+
+One interesting feature of the Stellar network is the concept of inflation, which is the way in which new lumens are created. Whereas other altcoins are generated through confirming transactions - also known as mining - lumens are created at a rate of 1% a year and the base fees from operations are added to an inflation pool which is redistributed to holders of lumens under certain criteria. There is more information on inflation [here](https://www.stellar.org/developers/guides/concepts/inflation.html).
+
+## Horizon API
+
+The best description of the API comes straight from [Stellar.org](https://www.stellar.org/developers/reference/)
+
+> Horizon is the client-facing API server for the Stellar ecosystem. It acts as the interface between Stellar Core and applications that want to access the Stellar network. Horizon allows you to submit transactions to the network, check the status of accounts, and subscribe to event streams. For more details, see an overview of the Stellar network. -->
+
+Whilst we can send transactions through the API the `stellardata` package available [here](https://github.com/statisticiansix/stellardata) has functions that pull data from the different endpoints available in the API. The reason that the `stellardata` package does not currently send operations is because since R is a language built around the analysis of data there are better languages in which to do so. Although this might be a feature added in later versions this is not a current focus.
+
+## Querying the API
+
+We have built a function that makes collecting the data from Horizon easy, especially if we want to pull more than the last 200 data point limit. Let us illustrate how we can use the API function to get the last 500 ledgers and how we can visualise the resulting data. The function `getStellarData()` is designed to work with the ledgers, effects, operations, payments, transactions, and trades endpoints as well as the links generated from the queries. There are also a selection of endpoint specific functions returning data relevant to each endpoint.
+
+### getStellarData()
+
+We can get information on the last 500 ledgers using:
+
+```{r}
+ledgerData <- getStellarData('ledgers',500)
+```
+
+#### Plots
+
+Let us create some plots using this data:
+
+```{r}
+ledgerDataSummarised <- ledgerData %>%
+  mutate(non_transaction_count=operation_count-transaction_count)%>%
+  gather('operations','number',c(non_transaction_count,transaction_count))
+
+ggplot(ledgerDataSummarised)+
+  geom_bar(aes(x=sequence,y=number,fill=operations),stat='identity')+
+  theme_bw()+
+  theme(legend.position='bottom')+
+  scale_x_continuous(expand=c(0,0))+
+  scale_y_continuous(expand=c(0,0))+
+  expand_limits(y=max(ledgerDataSummarised$operation_count)+2)+
+  ggtitle(sprintf('Sequence %i - %i',min(ledgerData$sequence),max(ledgerData$sequence)))
+```
+
+When accessing the "ledgers" endpoint in the API `getStellarData` automatically produces the time in seconds that it took for the ledger to close.
+
+```{r}
+circles <- ledgerData %>% group_by(closed_time)%>%
+  summarise(n=n())
+
+closeTimeData <- ledgerData %>% group_by(closed_time)%>%
+  summarise(n=n()) %>%
+  mutate(`Close Time`=sprintf('%ss - %s ledgers',closed_time,n),
+         `Close Time`=factor(`Close Time`,levels=`Close Time`)) # Makes sure that the scale in ggplot appears properly 1-10 not 1,10,2,...
+
+packing <- bind_cols(circleProgressiveLayout(circles$n),circles)
+
+plottingData <- circleLayoutVertices(packing,npoints=1000,xysizecols = 1:3,idcol = 4) %>%
+  left_join(closeTimeData,by=c('id'='closed_time'))
+
+ggplot() +
+  geom_polygon(data=plottingData,aes(x=x,y=y,group = `Close Time`, fill = `Close Time`),
+               colour = "black", show.legend = TRUE) +
+  coord_equal()+
+  theme_void()+
+  theme(legend.position='bottom')+
+  ggtitle(sprintf('Sequence %i - %i',min(ledgerData$sequence),max(ledgerData$sequence)))
+  
+```
+
+### Links within API call
+
+As well as working for the effects, operations, payments, transactions, and trades endpoints we can use `getStellarData()` to get the data for the links specified in the result of the API call to the ledgers endpoint, such as "`r gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])`". 
+
+We can get the API data for this link - `ledgerTransactionLink <- "`r gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])`"` - using `getStellarData()` like so:
+
+```{r,echo=FALSE}
+ledgerTransactionLink <- gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])
+```
+
+```{r}
+getStellarData(link=ledgerTransactionLink)
+```
+
+The function `getStellarData()` is a raw function that can be used to access several endpoints, however within the package there are more focused functions that are designed for each data endpoint within the API.
+
+### Focused functions
+
+Such use cases of the functions are as follows:
+
+```{r,eval=FALSE}
+getAccountData('GDXCFI3YAWU5PWFY4J2GEK3DRGQXQYAIT2OSTN7H2DLUIZQ55WKVLBTQ')
+getAssets(limit=100)
+getEffects()
+getLedgers()
+getLedgerData('16485192')
+getOperations()
+getOperationData('12884905985')
+getTrades()
+getTrades(offerid='36')
+getPayments()
+getTransactions()
+getTransactionData("d1814e94c242596dc9e6870f366ad2abd4f8800a61c3011a232eeeb73f1c7874")
+```
+
+Most of these functions return formatted data frames, getAccountData(), getLedgerData() and getTransactionData() return lists containing information and the associated additional endpoints. For example:
+
+```{r}
+accountData <- getAccountData('GDXCFI3YAWU5PWFY4J2GEK3DRGQXQYAIT2OSTN7H2DLUIZQ55WKVLBTQ')
+names(accountData)
+```
+
+Information is always a list containing endpoint specific elements, the other elements correspond to endpoint data specific to the initial endpoint - for example with this function the operations specific to the account.
+
+## Lineage
+
+When thinking about what I wanted to build around Stellar there was a suggestion to build an account lineage since every account is created by another. The function `getLineage()` takes a stellar address and you can specify the maximum number of generations you go back. If you reach an account where the parent is the same as the child then it will stop searching
+
+```{r}
+lineage <- getLineage('GDXCFI3YAWU5PWFY4J2GEK3DRGQXQYAIT2OSTN7H2DLUIZQ55WKVLBTQ')
+```
+
+`r paste(rev(lineage$child),collapse=' -> ')`
+
