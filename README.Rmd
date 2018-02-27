@@ -5,7 +5,6 @@ library(jsonlite)
 library(tidyverse)
 library(magrittr)
 library(packcircles)
-library(crypto)
 library(plotly)
 ```
  
@@ -45,7 +44,7 @@ ledgerData <- getStellarData('ledgers',500)
 
 #### Plots
 
-Let us create some plots using this data:
+We can create plots using the data like these:
 
 ```{r}
 ledgerDataSummarised <- ledgerData %>%
@@ -90,9 +89,9 @@ ggplot() +
 
 ### Links within API call
 
-As well as working for the effects, operations, payments, transactions, and trades endpoints we can use `getStellarData()` to get the data for the links specified in the result of the API call to the ledgers endpoint, such as "`r gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])`". 
+As well as working for the effects, operations, payments, transactions, and trades endpoints we can use `getStellarData()` to get the data for the links specified in the result of the API call to the ledgers endpoint, such as "https://horizon.stellar.org/ledgers/16526217/payments". 
 
-We can get the API data for this link - `ledgerTransactionLink <- "`r gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])`"` - using `getStellarData()` like so:
+We can get the API data for this link - `ledgerTransactionLink <- "https://horizon.stellar.org/ledgers/16526217/payments"` - using `getStellarData()` like so:
 
 ```{r,echo=FALSE}
 ledgerTransactionLink <- gsub('\\{\\?cursor,limit,order\\}','',filter(ledgerData,transaction_count>0) %>% .[['_links.payments.href']] %>% .[1])
@@ -139,6 +138,4 @@ When thinking about what I wanted to build around Stellar there was a suggestion
 ```{r}
 lineage <- getLineage('GDXCFI3YAWU5PWFY4J2GEK3DRGQXQYAIT2OSTN7H2DLUIZQ55WKVLBTQ')
 ```
-
-`r paste(rev(lineage$child),collapse=' -> ')`
 
